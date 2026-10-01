@@ -1,0 +1,52 @@
+# Deployment for the Binary Calculator web application.
+#
+# This replaces the imperative command used in the lab:
+#   kubectl create deployment binarycalculator-deployment \
+#       --image <repo-path>/binarycalculator --port=8080
+#
+# Set the image below to your own Artifact Registry path before applying:
+#   us-central1-docker.pkg.dev/<PROJECT-ID>/sofe3980u/binarycalculator
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: binarycalculator-deployment
+  labels:
+    app: binarycalculator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: binarycalculator
+  template:
+    metadata:
+      labels:
+        app: binarycalculator
+    spec:
+      containers:
+        - name: binarycalculator
+          image: REPLACE_WITH_REPO_PATH/binarycalculator
+          ports:
+            - containerPort: 8080
+              name: http
+          # give the container a moment to start before traffic is sent to it
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          # restart the container if the application stops responding
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 45
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

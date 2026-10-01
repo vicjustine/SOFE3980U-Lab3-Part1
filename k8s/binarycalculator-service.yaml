@@ -1,0 +1,24 @@
+# LoadBalancer service for the Binary Calculator deployment.
+#
+# This replaces the imperative command used in the lab:
+#   kubectl expose deployment binarycalculator-deployment \
+#       --type=LoadBalancer --name=binarycalculator-service
+#
+# The service keeps its external IP across redeployments, so the URL stays
+# the same even when the deployment is replaced.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: binarycalculator-service
+  labels:
+    app: binarycalculator
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080          # the port exposed on the external IP
+      targetPort: 8080    # the port the container listens on
+      protocol: TCP
+      name: http
+  selector:
+    app: binarycalculator
